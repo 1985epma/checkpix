@@ -4,6 +4,21 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    open-pull-requests-limit: 5
+    rebase-strategy: "auto"
+    labels:
+      - "dependencies"
+      - "dependabot"
+
+  # Se quiser adicionar verificações para outras linguagens (por exemplo: pip, docker, etc.),
+  # adicione outra entrada aqui. No momento este repositório é um script Bash, por isso
+  # não há ecossistema de pacotes adicional obrigatório.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
   - package-ecosystem: "npm"
     directory: "/"
     schedule:

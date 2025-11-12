@@ -15,15 +15,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Initialize CodeQL
-        uses: github/codeql-action/init@v2
+        uses: github/codeql-action/init@v4
         with:
           languages: 'javascript,python'
 
       - name: Autobuild
-        uses: github/codeql-action/autobuild@v2
+        uses: github/codeql-action/autobuild@v4
 
       - name: Perform CodeQL Analysis
-        uses: github/codeql-action/analyze@v2
+        uses: github/codeql-action/analyze@v4
 
   shellcheck:
     name: ShellCheck (Bash SAST)
@@ -57,16 +57,16 @@ jobs:
                 uses: actions/checkout@v4
 
               - name: Initialize CodeQL
-                uses: github/codeql-action/init@v2
+                uses: github/codeql-action/init@v4
                 with:
                   # use a repository config file to customize queries and paths
                   config-file: .github/codeql-config.yml
 
               - name: Autobuild (if applicable)
-                uses: github/codeql-action/autobuild@v2
+                uses: github/codeql-action/autobuild@v4
 
               - name: Perform CodeQL Analysis
-                uses: github/codeql-action/analyze@v2
+                uses: github/codeql-action/analyze@v4
                 with:
                   category: 'security'
 

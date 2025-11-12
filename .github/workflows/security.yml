@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
@@ -31,7 +31,7 @@ jobs:
     needs: codeql-analysis
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Run shellcheck on repository
         name: CI & Security
@@ -54,7 +54,7 @@ jobs:
               security-events: write
             steps:
               - name: Checkout repository
-                uses: actions/checkout@v4
+                uses: actions/checkout@v5
 
               - name: Initialize CodeQL
                 uses: github/codeql-action/init@v2
@@ -76,7 +76,7 @@ jobs:
             needs: codeql-analysis
             steps:
               - name: Checkout
-                uses: actions/checkout@v4
+                uses: actions/checkout@v5
 
               - name: Run shellcheck on repository
                 uses: koalaman/shellcheck-action@v1
@@ -90,7 +90,7 @@ jobs:
             needs: shellcheck
             steps:
               - name: Checkout
-                uses: actions/checkout@v4
+                uses: actions/checkout@v5
 
               - name: Setup Python
                 uses: actions/setup-python@v4

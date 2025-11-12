@@ -59,10 +59,8 @@ jobs:
               - name: Initialize CodeQL
                 uses: github/codeql-action/init@v2
                 with:
-                  # auto-detect languages in the repo
-                  languages: 'auto'
-                  # run recommended security + quality queries
-                  queries: security-and-quality
+                  # use a repository config file to customize queries and paths
+                  config-file: .github/codeql-config.yml
 
               - name: Autobuild (if applicable)
                 uses: github/codeql-action/autobuild@v2

@@ -1,0 +1,24 @@
+# CodeQL configuration file
+# This file customizes which queries and paths are analyzed by CodeQL.
+
+queries:
+  # Use the default security-and-quality pack and add additional packs if needed.
+  - security-and-quality
+
+paths:
+  # Exclude generated or vendored directories that don't need analysis
+  exclude:
+    - dist/**
+    - .github/**
+    - node_modules/**
+    - vendor/**
+    - build/**
+
+packs:
+  # Example of adding additional query packs (uncomment if you add packs):
+  # - name: codeql/javascript-queries
+  #   version: latest
+
+# You can further tune the configuration by specifying 'queries: add/remove' with
+# exact query IDs, or by setting 'autobuild: false' to skip the autobuild step for
+# languages that don't require compilation.

@@ -68,7 +68,7 @@ O script foi escrito para rodar em ambientes POSIX (Linux). Em Windows existem a
     ```powershell
     wsl --install -d ubuntu
     ```
-
+git push --force origin main
     Depois, abra a distro (Ubuntu), atualize e instale dependências:
 
     ```bash

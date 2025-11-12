@@ -1,5 +1,14 @@
 # checkpix
 
+About
+-----
+
+checkpix é um utilitário simples em Bash para monitoramento rápido de serviços relacionados ao sistema de pagamentos PIX e outras plataformas financeiras. Foi pensado para operadores e administradores que precisam de um verificador leve, com interface gráfica simples (via `zenity`) e capacidade de exportar relatórios HTML.
+
+Status do projeto: Protótipo funcional — adequado para uso local e monitoramento básico. Recomenda-se revisão e hardening antes do uso em produção crítica.
+
+---
+
 `checkpix` é um script Bash simples para verificar o status do PIX e de outras plataformas/serviços financeiros. Ele fornece uma interface gráfica mínima (via `zenity`) para executar checagens, mostrar progresso e exportar um relatório em HTML com os resultados.
 
 ## Funcionalidades

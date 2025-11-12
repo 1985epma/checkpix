@@ -151,6 +151,111 @@ Observação: o script já remove os temporários ao sair da opção `Sair`, mas
 - Adicionar verificação e instruções de instalação automática opcionais (por exemplo: prompt para instalar dependências).
 - Rodar `shellcheck` e aplicar recomendações para estilo/segurança.
 
+## Processo de deploy de segurança
+
+Esta seção descreve um processo prático e repetível para validar e publicar releases do `checkpix` com foco em segurança (SAST, DAST, SCA e controles operacionais). Adapte os passos à sua organização.
+
+1) Execução local (pré-push / pré-release)
+
+   - Verifique sintaxe e execução básica:
+
+     ```bash
+     bash -n pix.sh            # checagem sintática
+     ./pix.sh                  # teste manual em ambiente gráfico
+     ```
+
+   - Rodar ShellCheck para scripts Bash:
+
+     ```bash
+     # instalar shellcheck (Debian/Ubuntu)
+     sudo apt-get install -y shellcheck
+     shellcheck pix.sh
+     ```
+
+   - Executar CodeQL localmente (opcional, requer codeql CLI):
+
+     ```bash
+     # instalar CodeQL CLI: https://codeql.github.com/docs/codeql-cli/using-the-cli/
+     codeql database create codeql-db --language=auto --source-root=. \
+       || true
+     codeql database analyze codeql-db --format=sarif-latest --output=codeql-results.sarif security-and-quality
+     ```
+
+   - Executar DAST com OWASP ZAP localmente (baseline):
+
+     ```bash
+     # instalar o CLI do ZAP (ou usar Docker)
+     docker run -v $(pwd):/zap/wrk/:rw -t owasp/zap2docker-stable zap-baseline.py -t http://localhost:8000 -r zap-report.html
+     ```
+
+   - SCA (análise de dependências):
+
+     ```bash
+     # exemplo com Trivy - verifica imagens e diretórios
+     sudo apt-get install -y wget
+     wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_$(uname -s)_$(uname -m).tar.gz
+     # ou usar `trivy fs .` para analisar dependências do projeto
+     trivy fs --scanners vuln .
+     ```
+
+2) Integração contínua (GitHub Actions)
+
+   - O repositório já possui um workflow de segurança em `.github/workflows/security.yml` que executa:
+     - CodeQL (SAST)
+     - ShellCheck (SAST para Bash)
+     - OWASP ZAP baseline (DAST contra um servidor temporário)
+
+   - Antes de criar um release, garanta que todos os checks do GitHub Actions em `main` passem e que não existam alertas críticos em "Security -> Code scanning".
+
+3) Preparar artefatos
+
+   - Gere os pacotes (tar.gz / zip) em `dist/` conforme já usado na versão 0.1:
+
+     ```bash
+     VERSION=0.1 && mkdir -p dist && tar -czf dist/checkpix-$VERSION.tar.gz pix.sh README.md LICENSE
+     ```
+
+   - Gere checksums e assine (opcional):
+
+     ```bash
+     sha256sum dist/checkpix-$VERSION.tar.gz > dist/checkpix-$VERSION.tar.gz.sha256
+     gpg --detach-sign --armor dist/checkpix-$VERSION.tar.gz   # se usar assinatura GPG
+     ```
+
+4) Criar tag e Release
+
+   - Crie a tag semântica e suba para o remoto:
+
+     ```bash
+     git tag -a v$VERSION -m "Release v$VERSION"
+     git push origin v$VERSION
+     ```
+
+   - Criar um Release no GitHub (pelo UI ou `gh` CLI) anexando os artefatos `dist/*` e as assinaturas.
+
+     ```bash
+     # com GitHub CLI
+     gh release create v$VERSION dist/checkpix-$VERSION.tar.gz dist/checkpix-$VERSION.zip --title "v$VERSION" --notes "Release de segurança v$VERSION"
+     ```
+
+5) Controles pós-deploy
+
+   - Ative proteção de branch (Branch protection rules) para exigir que os workflows de segurança e CI passem antes do merge para `main`.
+   - Habilite alertas do Dependabot e configure revisões para PRs automáticos.
+   - Monitore CodeQL e Dependabot (Security -> Code scanning / Dependabot alerts) e trate vulnerabilidades com prioridade.
+
+6) Automação e rotina
+
+   - Agende scans regulares: o workflow de CodeQL foi configurado com cron; ajuste a frequência conforme necessidade.
+   - Configure notificações (Slack/Email) para alertas críticos.
+   - Documente procedimentos de rollback (por exemplo, anular release ou reverter tag) caso um problema crítico seja identificado.
+
+Notas finais
+
+- Nem todos os passos precisam ser manuais: automatize o máximo possível (CI executando SAST/SCA/DAST antes de abrir uma Release).
+- Para projetos maiores, adicione gateways de aprovação (approvals) via Code Owners e revisores de segurança antes de publicar.
+
+
 ## Contribuindo
 
 Pull requests são bem-vindos. Para pequenas correções e melhorias, abra uma issue descrevendo o problema ou a melhoria proposta. Para mudanças de comportamento, prefira abrir uma issue primeiro para discutir.
